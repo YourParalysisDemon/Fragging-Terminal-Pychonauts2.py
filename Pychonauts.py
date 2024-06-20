@@ -1,8 +1,8 @@
-
 import keyboard
 import tkinter as tk
 import pygame
 import pymem.exception
+import time
 from threading import Thread
 from pymem import *
 from pymem.process import *
@@ -19,6 +19,63 @@ speed_offsets = [0xE0, 0x90, 0xD0, 0x500, 0x0, 0x0, 0xAC]
 cash_offsets = [0x490, 0x140, 0x68, 0x3E8, 0x230]
 pspops_offsets = [0x490, 0x140,  0x128, 0x3E8, 0x180]
 player_speed = [0x20, 0x120, 0x98]
+gravity_offsets = [0x90, 0x360, 0x2b8, 0xb50]
+
+endInput = ctypes.windll.user32.SendInput
+
+# C struct redefinitions
+PUL = ctypes.POINTER(ctypes.c_ulong)
+
+
+class KeyBdInput(ctypes.Structure):
+    _fields_ = [("wVk", ctypes.c_ushort),
+                ("wScan", ctypes.c_ushort),
+                ("dwFlags", ctypes.c_ulong),
+                ("time", ctypes.c_ulong),
+                ("dwExtraInfo", PUL)]
+
+
+class HardwareInput(ctypes.Structure):
+    _fields_ = [("uMsg", ctypes.c_ulong),
+                ("wParamL", ctypes.c_short),
+                ("wParamH", ctypes.c_ushort)]
+
+
+class MouseInput(ctypes.Structure):
+    _fields_ = [("dx", ctypes.c_long),
+                ("dy", ctypes.c_long),
+                ("mouseData", ctypes.c_ulong),
+                ("dwFlags", ctypes.c_ulong),
+                ("time", ctypes.c_ulong),
+                ("dwExtraInfo", PUL)]
+
+
+class input_i(ctypes.Union):
+    _fields_ = [("ki", KeyBdInput),
+                ("mi", MouseInput),
+                ("hi", HardwareInput)]
+
+
+class input(ctypes.Structure):
+    _fields_ = [("type", ctypes.c_ulong),
+                ("ii", input_i)]
+
+
+# Actuals Functions
+def presskey(hexkeycode):
+    extra = ctypes.c_ulong(0)
+    ii_ = input_i()
+    ii_.ki = KeyBdInput(0, hexkeycode, 0x0008, 0, ctypes.pointer(extra))
+    x = input(ctypes.c_ulong(1), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+
+
+def releasekey(hexkeycode):
+    extra = ctypes.c_ulong(0)
+    ii_ = input_i()
+    ii_.ki = KeyBdInput(0, hexkeycode, 0x0008 | 0x0002, 0, ctypes.pointer(extra))
+    x = input(ctypes.c_ulong(1), ii_)
+    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
 
 
 def getpointeraddress(base, offsets):
@@ -37,6 +94,16 @@ def multi_run_god():
 
 def multi_run_meth():
     new_thread = Thread(target=meth, daemon=True)
+    new_thread.start()
+
+
+def multi_run_fuck_gravity():
+    new_thread = Thread(target=fuck_gravity, daemon=True)
+    new_thread.start()
+
+
+def multi_run_spam():
+    new_thread = Thread(target=spam, daemon=True)
     new_thread.start()
 
 
@@ -61,11 +128,38 @@ def god_hack():
             break
 
 
+def spam():
+    while 1:
+        try:
+            # spam e key
+            presskey(18)
+            time.sleep(0.01)
+            releasekey(18)
+
+        except pymem.exception.MemoryWriteError as e:
+            print(f"Error writing memory: {e}")
+        if keyboard.is_pressed("F1"):
+            print("Bot shutting down...")
+            break
+
+
 def meth():
     addr = getpointeraddress(module + 0x054B9258, player_speed)
     while 1:
         try:
             mem.write_int(addr, 0x40a00000)
+        except pymem.exception.MemoryWriteError as e:
+            print(f"Error writing memory: {e}")
+        if keyboard.is_pressed("F1"):
+            mem.write_int(addr, 0x3f800000)
+            break
+
+
+def fuck_gravity():
+    addr = getpointeraddress(module + 0x054B9258, gravity_offsets)
+    while 1:
+        try:
+            mem.write_int(addr, 0x00000000)
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
         if keyboard.is_pressed("F1"):
@@ -96,6 +190,8 @@ button1 = tk.Button(root, text="God Mode", bg='black', fg='white', command=multi
 button1.grid(row=0, column=0)
 button2 = tk.Button(root, text="Meth", bg='black', fg='white', command=multi_run_meth)
 button2.grid(row=1, column=0)
+button3 = tk.Button(root, text="Fuck Gravity", bg='black', fg='white', command=multi_run_fuck_gravity)
+button3.grid(row=2, column=0)
 button4 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
 button4.grid(row=3, column=0)
 label4 = tk.Label(master=root, text='C Show GUI', bg='red', fg='black')
@@ -104,7 +200,12 @@ label5 = tk.Label(master=root, text='V Hide GUI', bg='red', fg='black')
 label5.grid(row=1, column=3)
 label6 = tk.Label(master=root, text='F1 KILLS LOOPS', bg='red', fg='black')
 label6.grid(row=2, column=3)
+label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
+label7.grid(row=3, column=3)
+label8 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
 
 keyboard.add_hotkey("c", show)
 keyboard.add_hotkey("v", hide)
+keyboard.add_hotkey("l", multi_run_spam)
+keyboard.add_hotkey("k", root.destroy)
 root.mainloop()
