@@ -3,11 +3,21 @@ import tkinter as tk
 import pygame
 import pymem.exception
 import time
+import webbrowser
 from threading import Thread
 from pymem import *
 from pymem.process import *
 from pymem.ptypes import RemotePointer
 from time import sleep
+
+while True:
+    password = input("Enter password ")
+    if password == "115":
+        print("Welcome")
+        break
+    else:
+        print("Try again retard")
+
 
 mem = Pymem("Psychonauts2-Win64-Shipping")
 
@@ -170,12 +180,16 @@ def fuck_gravity():
 pygame.init()
 pygame.mixer_music.load("music/mod.mp3")
 pygame.mixer_music.play(1)
-
 root = tk.Tk()
+photo = tk.PhotoImage(file="back/155.png")
+root.wm_iconphoto(False, photo)
 root.title("Fragging Terminal")
-root.geometry("200x180")
 root.configure(background='dark red')
-root.attributes("-topmost", True)
+root.geometry("265x145")
+
+
+def callback(url):
+    webbrowser.open_new(url)
 
 
 def show():
@@ -193,7 +207,7 @@ button2.grid(row=1, column=0)
 button3 = tk.Button(root, text="Fuck Gravity", bg='black', fg='white', command=multi_run_fuck_gravity)
 button3.grid(row=2, column=0)
 button4 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
-button4.grid(row=3, column=0)
+button4.grid(row=4, column=0)
 label4 = tk.Label(master=root, text='C Show GUI', bg='red', fg='black')
 label4.grid(row=0, column=3)
 label5 = tk.Label(master=root, text='V Hide GUI', bg='red', fg='black')
@@ -203,6 +217,9 @@ label6.grid(row=2, column=3)
 label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
 label7.grid(row=3, column=3)
 label8 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
+link1 = tk.Label(root, text="Your Sleep Paralysis Demon", bg="black", fg="red", cursor="hand2")
+link1.grid(row=7, column=0)
+link1.bind("<Button-1>", lambda e: callback("https://steamcommunity.com/profiles/76561198259829950/"))
 
 keyboard.add_hotkey("c", show)
 keyboard.add_hotkey("v", hide)
