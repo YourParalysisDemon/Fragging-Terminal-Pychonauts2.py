@@ -172,7 +172,7 @@ def fuck_gravity():
             mem.write_int(addr, 0x00000000)
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
-        if keyboard.is_pressed("F1"):
+        if keyboard.is_pressed("c"):
             mem.write_int(addr, 0x3f800000)
             break
 
@@ -209,21 +209,25 @@ button3 = tk.Button(root, text="Fuck Gravity", bg='black', fg='white', command=m
 button3.grid(row=2, column=0)
 button4 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
 button4.grid(row=4, column=0)
-label4 = tk.Label(master=root, text='C Show GUI', bg='red', fg='black')
+label4 = tk.Label(master=root, text='- Show GUI', bg='red', fg='black')
 label4.grid(row=0, column=3)
-label5 = tk.Label(master=root, text='V Hide GUI', bg='red', fg='black')
+label5 = tk.Label(master=root, text='+ Hide GUI', bg='red', fg='black')
 label5.grid(row=1, column=3)
 label6 = tk.Label(master=root, text='F1 KILLS LOOPS', bg='red', fg='black')
 label6.grid(row=2, column=3)
 label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
 label7.grid(row=3, column=3)
 label8 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
+label8.grid(row=4, column=3)
+label9 = tk.Label(master=root, text='C turn on gravity', bg='red', fg='black')
+label9.grid(row=5, column=3)
 link1 = tk.Label(root, text="Your Sleep Paralysis Demon", bg="black", fg="red", cursor="hand2")
 link1.grid(row=7, column=0)
 link1.bind("<Button-1>", lambda e: callback("https://steamcommunity.com/profiles/76561198259829950/"))
 
-keyboard.add_hotkey("c", show)
-keyboard.add_hotkey("v", hide)
+keyboard.add_hotkey("-", show)
+keyboard.add_hotkey("+", hide)
 keyboard.add_hotkey("l", multi_run_spam)
 keyboard.add_hotkey("k", root.destroy)
+keyboard.add_hotkey("c", multi_run_fuck_gravity)
 root.mainloop()
