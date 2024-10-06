@@ -18,7 +18,6 @@ while True:
     else:
         print("Try again retard")
 
-
 mem = Pymem("Psychonauts2-Win64-Shipping")
 
 module = module_from_name(mem.process_handle, "Psychonauts2-Win64-Shipping.exe").lpBaseOfDll
@@ -27,9 +26,10 @@ laser_offsets = [0x8, 0x8, 0x270, 0xE0, 0x8, 0x104]
 health_offsets = [0x0, 0x20, 0x568, 0xD0, 0x0, 0x30]
 speed_offsets = [0xE0, 0x90, 0xD0, 0x500, 0x0, 0x0, 0xAC]
 cash_offsets = [0x490, 0x140, 0x68, 0x3E8, 0x230]
-pspops_offsets = [0x490, 0x140,  0x128, 0x3E8, 0x180]
+pspops_offsets = [0x490, 0x140, 0x128, 0x3E8, 0x180]
 player_speed = [0x20, 0x120, 0x98]
 gravity_offsets = [0x90, 0x360, 0x2b8, 0xb50]
+velocity_offsets = [0XF88, 0X8E0, 0X1CC]
 
 endInput = ctypes.windll.user32.SendInput
 
@@ -121,11 +121,14 @@ def god_hack():
     addr1 = getpointeraddress(module + 0x05549500, laser_offsets)
     addr2 = getpointeraddress(module + 0x05540360, health_offsets)
     addr3 = getpointeraddress(module + 0x0533DD00, cash_offsets)
+    addr4 = getpointeraddress(module + 0x05535B80, velocity_offsets)
+
     while 1:
         try:
             mem.write_int(addr1, 0x57550000)
             mem.write_int(addr2, 0x47960000)
             mem.write_int(addr3, 0x5000)
+            mem.write_int(addr4, 0x459c4000)
 
             sleep(0.02)
             if keyboard.is_pressed("space"):
@@ -172,7 +175,7 @@ def fuck_gravity():
             mem.write_int(addr, 0x00000000)
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
-        if keyboard.is_pressed("c"):
+        if keyboard.is_pressed("F1"):
             mem.write_int(addr, 0x3f800000)
             break
 
@@ -209,25 +212,21 @@ button3 = tk.Button(root, text="Fuck Gravity", bg='black', fg='white', command=m
 button3.grid(row=2, column=0)
 button4 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
 button4.grid(row=4, column=0)
-label4 = tk.Label(master=root, text='- Show GUI', bg='red', fg='black')
+label4 = tk.Label(master=root, text='C Show GUI', bg='red', fg='black')
 label4.grid(row=0, column=3)
-label5 = tk.Label(master=root, text='+ Hide GUI', bg='red', fg='black')
+label5 = tk.Label(master=root, text='V Hide GUI', bg='red', fg='black')
 label5.grid(row=1, column=3)
 label6 = tk.Label(master=root, text='F1 KILLS LOOPS', bg='red', fg='black')
 label6.grid(row=2, column=3)
 label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
 label7.grid(row=3, column=3)
 label8 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
-label8.grid(row=4, column=3)
-label9 = tk.Label(master=root, text='C turn on gravity', bg='red', fg='black')
-label9.grid(row=5, column=3)
 link1 = tk.Label(root, text="Your Sleep Paralysis Demon", bg="black", fg="red", cursor="hand2")
 link1.grid(row=7, column=0)
 link1.bind("<Button-1>", lambda e: callback("https://steamcommunity.com/profiles/76561198259829950/"))
 
-keyboard.add_hotkey("-", show)
-keyboard.add_hotkey("+", hide)
+keyboard.add_hotkey("c", show)
+keyboard.add_hotkey("v", hide)
 keyboard.add_hotkey("l", multi_run_spam)
 keyboard.add_hotkey("k", root.destroy)
-keyboard.add_hotkey("c", multi_run_fuck_gravity)
 root.mainloop()
