@@ -138,6 +138,7 @@ def god_hack():
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
         if keyboard.is_pressed("F1"):
+            mem.write_int(addr4, 0x43fa0000)
             break
 
 
