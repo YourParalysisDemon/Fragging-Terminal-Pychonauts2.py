@@ -29,7 +29,8 @@ cash_offsets = [0x490, 0x140, 0x68, 0x3E8, 0x230]
 pspops_offsets = [0x490, 0x140, 0x128, 0x3E8, 0x180]
 player_speed = [0x20, 0x120, 0x98]
 gravity_offsets = [0x90, 0x360, 0x2b8, 0xb50]
-velocity_offsets = [0XF88, 0X8E0, 0X1CC]
+walk_vel_offsets = [0X8, 0X8, 0X190, 0X19C]
+max_vel_offsets = [0X8, 0X8, 0X190, 0X1B0]
 
 endInput = ctypes.windll.user32.SendInput
 
@@ -121,15 +122,11 @@ def god_hack():
     addr1 = getpointeraddress(module + 0x05549500, laser_offsets)
     addr2 = getpointeraddress(module + 0x05540360, health_offsets)
     addr3 = getpointeraddress(module + 0x0533DD00, cash_offsets)
-    addr4 = getpointeraddress(module + 0x05535B80, velocity_offsets)
-
     while 1:
         try:
             mem.write_int(addr1, 0x57550000)
             mem.write_int(addr2, 0x47960000)
             mem.write_int(addr3, 0x5000)
-            mem.write_int(addr4, 0x459c4000)
-
             sleep(0.02)
             if keyboard.is_pressed("space"):
                 keyboard.press_and_release("space")
@@ -138,7 +135,6 @@ def god_hack():
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
         if keyboard.is_pressed("F1"):
-            mem.write_int(addr4, 0x43fa0000)
             break
 
 
@@ -149,7 +145,6 @@ def spam():
             presskey(18)
             time.sleep(0.01)
             releasekey(18)
-
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
         if keyboard.is_pressed("F1"):
@@ -159,13 +154,19 @@ def spam():
 
 def meth():
     addr = getpointeraddress(module + 0x054B9258, player_speed)
+    addr2 = getpointeraddress(module + 0x05549500, walk_vel_offsets)
+    addr3 = getpointeraddress(module + 0x05549500, max_vel_offsets)
     while 1:
         try:
             mem.write_int(addr, 0x40a00000)
+            mem.write_int(addr2, 0x459c4000)
+            mem.write_int(addr3, 0x459c4000)
         except pymem.exception.MemoryWriteError as e:
             print(f"Error writing memory: {e}")
         if keyboard.is_pressed("F1"):
             mem.write_int(addr, 0x3f800000)
+            mem.write_int(addr2, 0x43fa0000)
+            mem.write_int(addr3, 0x453b8000)
             break
 
 
