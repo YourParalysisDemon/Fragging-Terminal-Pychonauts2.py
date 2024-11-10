@@ -29,7 +29,6 @@ cash_offsets = [0x490, 0x140, 0x68, 0x3E8, 0x230]
 pspops_offsets = [0x490, 0x140, 0x128, 0x3E8, 0x180]
 player_speed = [0x20, 0x120, 0x98]
 gravity_offsets = [0x90, 0x360, 0x2b8, 0xb50]
-gravity_offsets2 = [0xF88, 0x8E0, 0x178]
 velocity_offsets = [0XF88, 0X8E0, 0X1CC]
 
 endInput = ctypes.windll.user32.SendInput
@@ -222,7 +221,10 @@ label6 = tk.Label(master=root, text='F1 KILLS LOOPS', bg='red', fg='black')
 label6.grid(row=2, column=3)
 label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
 label7.grid(row=3, column=3)
-label8 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
+label8 = tk.Label(master=root, text='F Fuck Gravity', bg='red', fg='black')
+label8.grid(row=4, column=3)
+label9 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
+label9.grid(row=5, column=3)
 link1 = tk.Label(root, text="Your Sleep Paralysis Demon", bg="black", fg="red", cursor="hand2")
 link1.grid(row=7, column=0)
 link1.bind("<Button-1>", lambda e: callback("https://steamcommunity.com/profiles/76561198259829950/"))
@@ -231,4 +233,5 @@ keyboard.add_hotkey("c", show)
 keyboard.add_hotkey("v", hide)
 keyboard.add_hotkey("l", multi_run_spam)
 keyboard.add_hotkey("k", root.destroy)
+keyboard.add_hotkey("F", multi_run_fuck_gravity)
 root.mainloop()
