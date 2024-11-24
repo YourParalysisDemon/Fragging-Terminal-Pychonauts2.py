@@ -32,6 +32,7 @@ gravity_offsets = [0x90, 0x360, 0x2b8, 0xb50]
 walk_vel_offsets = [0X8, 0X8, 0X190, 0X19C]
 max_vel_offsets = [0X8, 0X8, 0X190, 0X1B0]
 flip_gravity_offsets = [0X8, 0X8, 0X190, 0X148]
+clock_offsets = [0XE8, 0XE0, 0X328]
 
 endInput = ctypes.windll.user32.SendInput
 
@@ -124,6 +125,16 @@ def multi_run_flip():
     new_thread.start()
 
 
+def multi_run_slow():
+    new_thread = Thread(target=clock_decrease, daemon=True)
+    new_thread.start()
+
+
+def multi_run_fast():
+    new_thread = Thread(target=clock_increase, daemon=True)
+    new_thread.start()
+
+
 def god_hack():
     addr1 = getpointeraddress(module + 0x05549500, laser_offsets)
     addr2 = getpointeraddress(module + 0x05540360, health_offsets)
@@ -200,6 +211,30 @@ def flip_gravity():
             break
 
 
+def clock_increase():
+    addr = getpointeraddress(module + 0x0554CE10, clock_offsets)
+    while 1:
+        try:
+            mem.write_int(addr, 0x41400000)
+        except pymem.exception.MemoryWriteError as e:
+            print(f"Error writing memory: {e}")
+        if keyboard.is_pressed("F1"):
+            mem.write_int(addr, 0x3f800000)
+            break
+
+
+def clock_decrease():
+    addr = getpointeraddress(module + 0x0554CE10, clock_offsets)
+    while 1:
+        try:
+            mem.write_int(addr, 0x3e99999a)
+        except pymem.exception.MemoryWriteError as e:
+            print(f"Error writing memory: {e}")
+        if keyboard.is_pressed("F1"):
+            mem.write_int(addr, 0x3f800000)
+            break
+
+
 pygame.init()
 pygame.mixer_music.load("music/mod.mp3")
 pygame.mixer_music.play(1)
@@ -209,7 +244,7 @@ root.wm_iconphoto(False, photo)
 root.attributes("-topmost", True)
 root.title("Fragging Terminal")
 root.configure(background='dark red')
-root.geometry("265x195")
+root.geometry("265x200")
 
 
 def callback(url):
@@ -230,13 +265,19 @@ button2 = tk.Button(root, text="Meth", bg='black', fg='white', command=multi_run
 button2.grid(row=1, column=0)
 button3 = tk.Button(root, text="Fuck Gravity", bg='black', fg='white', command=multi_run_fuck_gravity)
 button3.grid(row=2, column=0)
-button4 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
-button4.grid(row=4, column=0)
-label4 = tk.Label(master=root, text='C Show GUI', bg='red', fg='black')
+button4 = tk.Button(root, text="Speed up time", bg='black', fg='white', command=multi_run_fast)
+button4.grid(row=3, column=0)
+button5 = tk.Button(root, text="Slow down time", bg='black', fg='white', command=multi_run_slow)
+button5.grid(row=4, column=0)
+button6 = tk.Button(root, text="Flip Gravity", bg='black', fg='white', command=multi_run_flip)
+button6.grid(row=5, column=0)
+button7 = tk.Button(root, text="Exit", bg='white', fg='black', command=root.destroy)
+button7.grid(row=6, column=0)
+label4 = tk.Label(master=root, text='/ Show GUI', bg='red', fg='black')
 label4.grid(row=0, column=3)
-label5 = tk.Label(master=root, text='V Hide GUI', bg='red', fg='black')
+label5 = tk.Label(master=root, text='* Hide GUI', bg='red', fg='black')
 label5.grid(row=1, column=3)
-label6 = tk.Label(master=root, text='F1 KILLS LOOPS', bg='red', fg='black')
+label6 = tk.Label(master=root, text='F1 KILL LOOPS', bg='red', fg='black')
 label6.grid(row=2, column=3)
 label7 = tk.Label(master=root, text='L Spam E key', bg='red', fg='black')
 label7.grid(row=3, column=3)
@@ -246,15 +287,19 @@ label9 = tk.Label(master=root, text='K KILL EXE', bg='red', fg='black')
 label9.grid(row=5, column=3)
 label10 = tk.Label(master=root, text='Z Flip Gravity', bg='red', fg='black')
 label10.grid(row=6, column=3)
+label10 = tk.Label(master=root, text='Time -/+', bg='red', fg='black')
+label10.grid(row=7, column=3)
 link1 = tk.Label(root, text="Your Sleep Paralysis Demon", bg="black", fg="red", cursor="hand2")
 link1.grid(row=7, column=0)
 link1.bind("<Button-1>", lambda e: callback("https://steamcommunity.com/profiles/76561198259829950/"))
 
-keyboard.add_hotkey("c", show)
-keyboard.add_hotkey("v", hide)
+keyboard.add_hotkey("/", show)
+keyboard.add_hotkey("*", hide)
 keyboard.add_hotkey("l", multi_run_spam)
 keyboard.add_hotkey("k", root.destroy)
 keyboard.add_hotkey("F", multi_run_fuck_gravity)
 keyboard.add_hotkey("Z", multi_run_flip)
+keyboard.add_hotkey("-", multi_run_slow)
+keyboard.add_hotkey("+", multi_run_fast)
 root.mainloop()
 
