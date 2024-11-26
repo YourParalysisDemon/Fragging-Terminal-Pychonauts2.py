@@ -135,6 +135,11 @@ def multi_run_fast():
     new_thread.start()
 
 
+def multi_run_stop():
+    new_thread = Thread(target=clock_stop, daemon=True)
+    new_thread.start()
+
+
 def god_hack():
     addr1 = getpointeraddress(module + 0x05549500, laser_offsets)
     addr2 = getpointeraddress(module + 0x05540360, health_offsets)
@@ -235,6 +240,18 @@ def clock_decrease():
             break
 
 
+def clock_stop():
+    addr1 = getpointeraddress(module + 0x0554CE10, clock_offsets)
+    while 1:
+        try:
+            mem.write_int(addr1, 0x00000000)
+        except pymem.exception.MemoryWriteError as e:
+            print(f"Error writing memory: {e}")
+        if keyboard.is_pressed("F1"):
+            mem.write_int(addr1, 0x3f800000)
+            break
+
+
 pygame.init()
 pygame.mixer_music.load("music/mod.mp3")
 pygame.mixer_music.play(1)
@@ -301,5 +318,5 @@ keyboard.add_hotkey("F", multi_run_fuck_gravity)
 keyboard.add_hotkey("Z", multi_run_flip)
 keyboard.add_hotkey("-", multi_run_slow)
 keyboard.add_hotkey("+", multi_run_fast)
+keyboard.add_hotkey("9", multi_run_stop)
 root.mainloop()
-
